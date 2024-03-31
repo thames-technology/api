@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package thamesflix.titlecatalog.v1alpha1;
+
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+// The title catalog service provides operations for managing titles, e.g. movies, tv shows, etc.
+service TitleCatalogService {
+  // CreateTitle creates a new title.
+  rpc CreateTitle(CreateTitleRequest) returns (CreateTitleResponse);
+  // GetTitle retrieves a title by ID.
+  rpc GetTitle(GetTitleRequest) returns (GetTitleResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // ListTitles lists titles.
+  rpc ListTitles(ListTitlesRequest) returns (ListTitlesResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // UpdateTitle updates an existing title.
+  rpc UpdateTitle(UpdateTitleRequest) returns (UpdateTitleResponse);
+  // HealthCheck checks the health of the service.
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+}
+
+// CreateTitleRequest defines the request message for CreateTitle.
+message CreateTitleRequest {
+  // A UUID to uniquely identify the create request, used to prevent duplicate requests.
+  optional string request_id = 1;
+  // The title to create.
+  Title title = 2;
+}
+
+// CreateTitleResponse defines the response message for CreateTitle.
+message CreateTitleResponse {
+  // The title that was created.
+  Title title = 1;
+}
+
+// GetTitleRequest defines the request message for GetTitle.
+message GetTitleRequest {
+  // The ID of the title to retrieve.
+  string id = 1;
+}
+
+// GetTitleResponse defines the response message for GetTitle.
+message GetTitleResponse {
+  // The title that was retrieved.
+  Title title = 1;
+}
+
+// ListTitlesRequest defines the request message for ListTitles.
+message ListTitlesRequest {
+  // The maximum number of titles to return.
+  // Must be between 1 and 1000 inclusive.
+  uint32 max_page_size = 1;
+  // The page token to use when retrieving the next page of results.
+  optional string page_token = 2;
+}
+
+// ListTitlesResponse defines the response message for ListTitles.
+message ListTitlesResponse {
+  // The titles that were retrieved.
+  repeated Title results = 1;
+  // The estimated total number of results that can be paged through.
+  uint32 total_results_estimate = 2;
+  // The page token to use when retrieving the next page of results.
+  optional string next_page_token = 3;
+}
+
+// UpdateTitleRequest defines the request message for UpdateTitle.
+message UpdateTitleRequest {
+  // A UUID to uniquely identify the create request, used to prevent duplicate requests.
+  optional string request_id = 1;
+  // The title to update.
+  Title title = 2;
+  // The field mask to determine which fields to update.
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+// UpdateTitleResponse defines the response message for UpdateTitle.
+message UpdateTitleResponse {
+  // The title that was updated.
+  Title title = 1;
+}
+
+// HealthCheckRequest defines the request message for HealthCheck.
+message HealthCheckRequest {}
+
+// HealthCheckResponse defines the response message for HealthCheck.
+message HealthCheckResponse {
+  // The status of the service.
+  ServingStatus status = 1;
+}
+
+// Represents a title that can be sold on the marketplace.
+message Title {
+  // The unique identifier for the title.
+  // For create requests, this field is set by the server and cannot be changed.
+  // For update requests, users must provide a valid ID of an existing title.
+  string id = 1;
+  // The id of the user who created the title.
+  // This field is set by the server and cannot be changed.
+  string user_id = 2;
+  // When the title was created in the system.
+  // This field is set by the server and cannot be changed.
+  google.protobuf.Timestamp create_time = 3;
+  // When the title was last updated in the system.
+  // This field is set by the server and cannot be changed.
+  google.protobuf.Timestamp update_time = 4;
+  // The official name of the title.
+  // Required for create requests.
+  string name = 5;
+  // A brief summary of the story.
+  // Required for create requests.
+  string plot = 6;
+  // The release date of the title.
+  // Required for create requests.
+  google.type.Date release_date = 7;
+  // A list of actors credited with a significant role in the title.
+  // Required for create requests.
+  // Updating this field will replace the existing list of stars.
+  repeated string actors = 8;
+  // A list of directors.
+  // Required for create requests.
+  // Updating this field will replace the existing list of directors.
+  repeated string directors = 9;
+  // The genres associated with the title.
+  // Required for create requests.
+  // Updating this field will replace the existing list of genres.
+  repeated string genres = 10;
+  // The URL of the poster for the title.
+  optional string poster_url = 11;
+  // The type of the title (e.g. movie, tv show).
+  // Required for create requests.
+  TitleType type = 12;
+  // Awards or nominations the title has received.
+  optional string awards = 13;
+}
+
+// TitleType represents the type of a title.
+enum TitleType {
+  // The title type is unspecified.
+  TITLE_TYPE_UNSPECIFIED = 0;
+  // The title is a movie.
+  TITLE_TYPE_MOVIE = 1;
+  // The title is a TV show.
+  TITLE_TYPE_TV_SHOW = 2;
+  // The title is a video game.
+  TITLE_TYPE_VIDEO_GAME = 3;
+  // The title is of another type.
+  TITLE_TYPE_OTHER = 4;
+}
+
+// ServingStatus represents the health status of a service.
+enum ServingStatus {
+  // The serving status is unspecified.
+  SERVING_STATUS_UNSPECIFIED = 0;
+  // The service is serving requests.
+  SERVING_STATUS_SERVING = 1;
+  // The service is not serving requests.
+  SERVING_STATUS_NOT_SERVING = 2;
+}

@@ -1,0 +1,39 @@
+name: Check protos
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'proto/**.proto'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'proto/**.proto'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Format protos
+        run: buf format --diff --exit-code
+
+      - name: Lint protos
+        uses: bufbuild/buf-lint-action@v1
+
+      - name: Check for breaking changes in protos
+        uses: bufbuild/buf-breaking-action@v1
+        with:
+          against: 'https://github.com/${GITHUB_REPOSITORY}.git#branch=main'
