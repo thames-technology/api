@@ -1,4 +1,10 @@
-Install Buf CLI:
+# Thames APIs
+
+Protobuf definitions for Thames public APIs, following [API Design Patterns](https://www.oreilly.com/library/view/api-design-patterns/9781617295850/).
+
+## Contributing
+
+Install [Buf CLI](https://buf.build/product/cli):
 
 ```sh
 brew install buf
@@ -11,9 +17,8 @@ proto> buf lint
 proto> buf format -w
 ```
 
-Useful reading:
+### Useful reading
 
-- https://buf.build/product/cli
 - https://github.com/connectrpc/connect-es
 - https://buf.build/blog/connect-node-beta
 - https://connectrpc.com/docs/web/using-clients/
