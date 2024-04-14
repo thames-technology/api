@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package thamesflix.streaming.v1alpha1;
+
+import "google/protobuf/timestamp.proto";
+
+// The streaming service is responsible for managing the playback of titles.
+service StreamingService {
+  // Creates a new playback session for a title.
+  rpc CreatePlaybackSession(CreatePlaybackSessionRequest) returns (CreatePlaybackSessionResponse);
+  // TODO: Implement these methods.
+  //
+  // // Retrieves the playback session for a title.
+  // rpc GetPlaybackSession(GetPlaybackSessionRequest) returns (GetPlaybackSessionResponse) {
+  //   option idempotency_level = NO_SIDE_EFFECTS;
+  // }
+  // // Lists the playback sessions for a user.
+  // rpc ListPlaybackSessions(ListPlaybackSessionsRequest) returns (ListPlaybackSessionsResponse) {
+  //   option idempotency_level = NO_SIDE_EFFECTS;
+  // }
+  // Sends a heartbeat to keep the playback session alive.
+  rpc SendHeartbeat(SendHeartbeatRequest) returns (SendHeartbeatResponse);
+  // Pauses the playback of a title.
+  rpc PausePlayback(PausePlaybackRequest) returns (PausePlaybackResponse);
+  // Resumes the playback of a title.
+  rpc ResumePlayback(ResumePlaybackRequest) returns (ResumePlaybackResponse);
+  // Restarts the playback of a title.
+  rpc RestartPlayback(RestartPlaybackRequest) returns (RestartPlaybackResponse);
+}
+
+// CreatePlaybackSessionRequest defines the request message for CreatePlaybackSession.
+message CreatePlaybackSessionRequest {
+  // The playback session to create.
+  PlaybackSession playback_session = 1;
+}
+
+// CreatePlaybackSessionResponse defines the response message for CreatePlaybackSession.
+message CreatePlaybackSessionResponse {
+  // The playback session that was started or resumed.
+  PlaybackSession playback_session = 1;
+}
+
+// SendHeartbeatRequest defines the request message for SendHeartbeat.
+message SendHeartbeatRequest {
+  // The ID of the playback session.
+  string playback_session_id = 1;
+  // The position in the title in seconds.
+  // This can be used to update the position of the playback session, for example, when the user seeks.
+  uint64 position_seconds = 2;
+}
+
+// SendHeartbeatResponse defines the response message for SendHeartbeat.
+message SendHeartbeatResponse {}
+
+// PausePlaybackRequest defines the request message for PausePlayback.
+message PausePlaybackRequest {
+  // The ID of the playback session.
+  string playback_session_id = 1;
+}
+
+// PausePlaybackResponse defines the response message for PausePlayback.
+message PausePlaybackResponse {}
+
+// ResumePlaybackRequest defines the request message for ResumePlayback.
+message ResumePlaybackRequest {
+  // The ID of the playback session.
+  string playback_session_id = 1;
+}
+
+// ResumePlaybackResponse defines the response message for ResumePlayback.
+message ResumePlaybackResponse {}
+
+// RestartPlaybackRequest defines the request message for RestartPlayback.
+message RestartPlaybackRequest {
+  // The ID of the playback session.
+  string playback_session_id = 1;
+}
+
+// RestartPlaybackResponse defines the response message for RestartPlayback.
+message RestartPlaybackResponse {}
+
+// PlaybackSession represents an active session of a title being played.
+message PlaybackSession {
+  // The unique identifier of the playback session.
+  // For create requests, this field is set by the server and cannot be changed.
+  // For update requests, users must provide a valid ID of an existing title.
+  string id = 1;
+  // The id of the user who created the playback session.
+  // This field is set by the server and cannot be changed.
+  string user_id = 2;
+  // When the playback session was created in the system.
+  // This field is set by the server and cannot be changed.
+  google.protobuf.Timestamp create_time = 3;
+  // When the playback session was last updated in the system.
+  // This field is set by the server and cannot be changed.
+  google.protobuf.Timestamp update_time = 4;
+  // When the playback session was completed.
+  // This field will be set by the server when the playback session is completed.
+  google.protobuf.Timestamp complete_time = 5;
+  // The ID of the title being played.
+  // Required for create requests.
+  // Must be a valid title ID in the system and the title must be available to the user.
+  // This field cannot be changed after the playback session is created.
+  string title_id = 6;
+  // How far into the title the playback session is.
+  // The position is maintained by an internal timer and can only be updated via the SendHeartbeat method.
+  uint64 position_seconds = 7;
+  // The status of the playback session.
+  // Users can only update the status of the playback session via the PausePlayback and ResumePlayback methods.
+  PlaybackStatus status = 8;
+  // The interval in seconds to send heartbeats.
+  // If a heartbeat is not received within the interval, the playback session is considered inactive and will be paused.
+  // The default value is 15 seconds.
+  uint64 heartbeat_interval_seconds = 9;
+  // How many times the user has watched the title.
+  // This field is incremented each time the user completes the title and cannot be changed by the user.
+  uint64 watch_count = 10;
+}
+
+// PlaybackStatus represents the status of a playback session.
+enum PlaybackStatus {
+  // Unspecified playback status.
+  PLAYBACK_STATUS_UNSPECIFIED = 0;
+  // The title is currently playing.
+  PLAYBACK_STATUS_PLAYING = 1;
+  // The playback of the title is paused.
+  PLAYBACK_STATUS_PAUSED = 2;
+  // The playback of the title has completed.
+  PLAYBACK_STATUS_COMPLETED = 3;
+}
