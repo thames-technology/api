@@ -46,7 +46,7 @@ message SendHeartbeatRequest {
   string playback_session_id = 1;
   // The position in the title in seconds.
   // This can be used to update the position of the playback session, for example, when the user seeks.
-  uint64 position_seconds = 2;
+  optional uint32 position_seconds = 2;
 }
 
 // SendHeartbeatResponse defines the response message for SendHeartbeat.
@@ -65,6 +65,9 @@ message PausePlaybackResponse {}
 message ResumePlaybackRequest {
   // The ID of the playback session.
   string playback_session_id = 1;
+  // The position in the title in seconds to resume playback from.
+  // This can be used to update the position of the playback session, for example, when the user seeks.
+  optional uint32 position_seconds = 2;
 }
 
 // ResumePlaybackResponse defines the response message for ResumePlayback.
@@ -102,19 +105,22 @@ message PlaybackSession {
   // Must be a valid title ID in the system and the title must be available to the user.
   // This field cannot be changed after the playback session is created.
   string title_id = 6;
+  // The duration of the title in seconds.
+  // This field is set by the server and cannot be changed.
+  uint32 title_duration_seconds = 7;
   // How far into the title the playback session is.
   // The position is maintained by an internal timer and can only be updated via the SendHeartbeat method.
-  uint64 position_seconds = 7;
+  uint32 position_seconds = 8;
   // The status of the playback session.
   // Users can only update the status of the playback session via the PausePlayback and ResumePlayback methods.
-  PlaybackStatus status = 8;
+  PlaybackStatus status = 9;
   // The interval in seconds to send heartbeats.
   // If a heartbeat is not received within the interval, the playback session is considered inactive and will be paused.
-  // The default value is 15 seconds.
-  uint64 heartbeat_interval_seconds = 9;
+  // Must be between 60 and 300 seconds. The default is 120 seconds.
+  optional uint32 heartbeat_interval_seconds = 10;
   // How many times the user has watched the title.
   // This field is incremented each time the user completes the title and cannot be changed by the user.
-  uint64 watch_count = 10;
+  uint32 watch_count = 11;
 }
 
 // PlaybackStatus represents the status of a playback session.
