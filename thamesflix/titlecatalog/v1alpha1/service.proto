@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package thamesflix.titlecatalog.v1alpha1;
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
@@ -117,28 +118,31 @@ message Title {
   // A brief summary of the story.
   // Required for create requests.
   string plot = 6;
+  // The duration of the title.
+  // Required for create requests.
+  google.protobuf.Duration duration = 7;
   // The release date of the title.
   // Required for create requests.
-  google.type.Date release_date = 7;
+  google.type.Date release_date = 8;
   // A list of actors credited with a significant role in the title.
   // Required for create requests.
   // Updating this field will replace the existing list of stars.
-  repeated string actors = 8;
+  repeated string actors = 9;
   // A list of directors.
   // Required for create requests.
   // Updating this field will replace the existing list of directors.
-  repeated string directors = 9;
+  repeated string directors = 10;
   // The genres associated with the title.
   // Required for create requests.
   // Updating this field will replace the existing list of genres.
-  repeated string genres = 10;
+  repeated string genres = 11;
   // The URL of the poster for the title.
-  optional string poster_url = 11;
+  optional string poster_url = 12;
   // The type of the title (e.g. movie, tv show).
   // Required for create requests.
-  TitleType type = 12;
+  TitleType type = 13;
   // Awards or nominations the title has received.
-  optional string awards = 13;
+  optional string awards = 14;
 }
 
 // TitleType represents the type of a title.
