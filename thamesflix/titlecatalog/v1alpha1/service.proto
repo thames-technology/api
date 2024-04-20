@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package thamesflix.titlecatalog.v1alpha1;
 
-import "google/protobuf/duration.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
@@ -118,9 +117,8 @@ message Title {
   // A brief summary of the story.
   // Required for create requests.
   string plot = 6;
-  // The duration of the title.
-  // Required for create requests.
-  google.protobuf.Duration duration = 7;
+  // The duration of the title in minutes.
+  optional uint32 duration_minutes = 7;
   // The release date of the title.
   // Required for create requests.
   google.type.Date release_date = 8;
@@ -138,7 +136,7 @@ message Title {
   repeated string genres = 11;
   // The URL of the poster for the title.
   optional string poster_url = 12;
-  // The type of the title (e.g. movie, tv show).
+  // The type of the title (e.g. movie, series).
   // Required for create requests.
   TitleType type = 13;
   // Awards or nominations the title has received.
@@ -147,16 +145,18 @@ message Title {
 
 // TitleType represents the type of a title.
 enum TitleType {
-  // The title type is unspecified.
+  // Default value for cases where the type is not set or unknown.
   TITLE_TYPE_UNSPECIFIED = 0;
-  // The title is a movie.
+  // All full-length films, typically narrative fiction or theatrical releases.
   TITLE_TYPE_MOVIE = 1;
-  // The title is a TV show.
-  TITLE_TYPE_TV_SHOW = 2;
-  // The title is a video game.
-  TITLE_TYPE_VIDEO_GAME = 3;
-  // The title is of another type.
-  TITLE_TYPE_OTHER = 4;
+  // All serialized content, including TV shows, web series, miniseries, and animated series.
+  TITLE_TYPE_SERIES = 2;
+  // Content that is not regularly scheduled or episodic, such as award shows, yearly events, and TV specials.
+  TITLE_TYPE_SPECIAL = 3;
+  // Short form content such as short films and music videos, typically under 40 minutes.
+  TITLE_TYPE_SHORT = 4;
+  // Both single documentaries and documentary series.
+  TITLE_TYPE_DOCUMENTARY = 5;
 }
 
 // ServingStatus represents the health status of a service.
