@@ -157,6 +157,8 @@ enum TitleType {
   TITLE_TYPE_SHORT = 4;
   // Both single documentaries and documentary series.
   TITLE_TYPE_DOCUMENTARY = 5;
+  // All video games, including console, PC, and mobile games.
+  TITLE_TYPE_GAME = 6;
 }
 
 // ServingStatus represents the health status of a service.
